@@ -98,11 +98,11 @@ fun LoginScreen(
         )
     }
 
-    LaunchedEffect(key1 = Unit) {
-        if(googleAuthUiClient.getSignedInUser() != null) {
-            viewModel.navigationEvent(Screens.HomeScreen.route)
-        }
-    }
+//    LaunchedEffect(key1 = Unit) {
+//        if(googleAuthUiClient.getSignedInUser() != null) {
+//            viewModel.navigationEvent(Screens.HomeScreen.route)
+//        }
+//    }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),

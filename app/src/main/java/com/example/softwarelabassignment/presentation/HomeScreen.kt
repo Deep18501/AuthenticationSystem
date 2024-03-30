@@ -40,7 +40,7 @@ fun HomeScreen(navController: NavController,viewModel: AuthViewModel= hiltViewMo
                     viewModel.resetState()
                     viewModel.logout()
                     navController.navigate(Screens.LoginScreenMain.route) {
-                        popUpTo(Screens.HomeScreen.route) {
+                        popUpTo(Screens.LoginScreenMain.route) {
                             inclusive = true
                         }
                     }

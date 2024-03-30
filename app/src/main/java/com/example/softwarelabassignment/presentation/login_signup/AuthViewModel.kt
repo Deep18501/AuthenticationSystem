@@ -15,6 +15,7 @@ import com.example.softwarelabassignment.domain.repository.LoginSignUpRepository
 import com.example.softwarelabassignment.presentation.Screens
 import com.example.softwarelabassignment.presentation.components.SignInResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -76,8 +77,9 @@ class AuthViewModel @Inject constructor(
     fun setPhoneState(newText: String) {
         _phoneState.value = _phoneState.value.copy(text = newText)
     }
+
     suspend fun logout() {
-        _loadingState.emit(false)
+
         _loadingState.update {
             false
         }
@@ -86,9 +88,11 @@ class AuthViewModel @Inject constructor(
     fun setPasswordState(text: String) {
         _passwordState.value = _passwordState.value.copy(text = text)
     }
+
     fun setOtpState(text: String) {
         _otpState.value = _otpState.value.copy(text = text)
     }
+
     fun setTokenState(text: String) {
         _tokenState.value = _tokenState.value.copy(text = text)
     }
@@ -102,8 +106,7 @@ class AuthViewModel @Inject constructor(
     }
 
 
-
-    fun onSocialSignInResult(result: SignInResult, type:String) {
+    fun onSocialSignInResult(result: SignInResult, type: String) {
 
         viewModelScope.launch {
             setLoadingState(true)
@@ -116,7 +119,7 @@ class AuthViewModel @Inject constructor(
                     email = it.userEmail,
                     type = type,
                     social_id = result.data.userId
-                    )
+                )
             }?.let {
                 repository.loginPost(
                     it
@@ -130,6 +133,7 @@ class AuthViewModel @Inject constructor(
                         is Result.Success -> {
                             if (result.data?.success.toBoolean()) {
                                 _eventFlow.emit(UiEvents.SnackbarEvent("Logined Succesfully"))
+                                delay(2000)
                                 _loginState.update {
                                     result.data?.success.toBoolean()
                                 }
@@ -151,7 +155,7 @@ class AuthViewModel @Inject constructor(
 
     }
 
-    fun onSocialRegisterInResult(result: SignInResult, type:String) {
+    fun onSocialRegisterInResult(result: SignInResult, type: String) {
         viewModelScope.launch {
             setLoadingState(true)
             Log.d("AuthViewModel", "Login Started $result")
@@ -185,6 +189,7 @@ class AuthViewModel @Inject constructor(
                                 Log.d("AuthViewModel", "Register success ${result.data?.token}")
 
                                 _eventFlow.emit(UiEvents.SnackbarEvent("Registered Succesfully"))
+                                delay(2000)
 
                                 _loginState.update {
                                     result.data?.success.toBoolean()
@@ -207,6 +212,7 @@ class AuthViewModel @Inject constructor(
     fun resetState() {
         _loginState.update { false }
     }
+
     suspend fun snackBarEvent(message: String) {
         _eventFlow.emit(
             UiEvents.SnackbarEvent(message)
@@ -247,6 +253,7 @@ class AuthViewModel @Inject constructor(
                     is Result.Success -> {
                         if (result.data?.success.toBoolean()) {
                             _eventFlow.emit(UiEvents.SnackbarEvent("Logined Succesfully"))
+                            delay(2000)
                             _loginState.update {
                                 result.data?.success.toBoolean()
                             }
@@ -312,11 +319,13 @@ class AuthViewModel @Inject constructor(
             registration_proof = document
         )
     }
-    fun update4(businessHours: BusinessHours){
-        registerDetails=registerDetails?.copy(
+
+    fun update4(businessHours: BusinessHours) {
+        registerDetails = registerDetails?.copy(
             business_hours = businessHours
         )
     }
+
     fun signUpUser() {
         viewModelScope.launch {
             setLoadingState(true)
@@ -343,7 +352,7 @@ class AuthViewModel @Inject constructor(
                                 Log.d("AuthViewModel", "Register success ${result.data?.token}")
 
                                 _eventFlow.emit(UiEvents.SnackbarEvent("Registered Succesfully"))
-
+                                delay(2000)
                                 _loginState.update {
                                     result.data?.success.toBoolean()
                                 }
@@ -365,8 +374,8 @@ class AuthViewModel @Inject constructor(
     fun forgotPassword() {
         viewModelScope.launch {
             setLoadingState(true)
-            repository.forgotPassword(phoneState.value.text).collectLatest {result->
-                Log.d("AuthViewModel",result.toString())
+            repository.forgotPassword(phoneState.value.text).collectLatest { result ->
+                Log.d("AuthViewModel", result.toString())
                 when (result) {
                     is Result.Error -> {
                         snackBarEvent(result.message ?: "Error!")
@@ -386,10 +395,11 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
-    fun verifyOtp(){
+
+    fun verifyOtp() {
         viewModelScope.launch {
             setLoadingState(true)
-            repository.verifyPassword(otpState.value.text).collectLatest {result->
+            repository.verifyPassword(otpState.value.text).collectLatest { result ->
                 when (result) {
 
                     is Result.Error -> {
@@ -411,10 +421,15 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
-    fun changePassword(){
+
+    fun changePassword() {
         viewModelScope.launch {
             setLoadingState(true)
-            repository.changePassword(token = _tokenState.value.text, password = passwordState.value.text, cPassword = rpasswordState.value.text).collectLatest {result->
+            repository.changePassword(
+                token = _tokenState.value.text,
+                password = passwordState.value.text,
+                cPassword = rpasswordState.value.text
+            ).collectLatest { result ->
                 when (result) {
 
                     is Result.Error -> {
