@@ -13,7 +13,7 @@ import com.example.softwarelabassignment.data.model.UserLoginDetails
 import com.example.softwarelabassignment.data.model.UserRegisterDetails
 import com.example.softwarelabassignment.domain.repository.LoginSignUpRepository
 import com.example.softwarelabassignment.presentation.Screens
-import com.example.softwarelabassignment.presentation.components.socialauth.SignInResult
+import com.example.softwarelabassignment.presentation.components.SignInResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

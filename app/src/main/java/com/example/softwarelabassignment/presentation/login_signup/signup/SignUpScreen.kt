@@ -62,8 +62,8 @@ import com.example.softwarelabassignment.presentation.components.HandleUiEvents
 import com.example.softwarelabassignment.presentation.components.SocialIcons
 import com.example.softwarelabassignment.presentation.components.TitleText
 import com.example.softwarelabassignment.presentation.login_signup.AuthViewModel
-import com.example.softwarelabassignment.presentation.components.socialauth.SignInResult
-import com.example.softwarelabassignment.presentation.components.socialauth.UserData
+import com.example.softwarelabassignment.presentation.components.SignInResult
+import com.example.softwarelabassignment.presentation.components.UserData
 import com.example.softwarelabassignment.ui.theme.BgGrey
 import com.example.softwarelabassignment.ui.theme.TextOrange
 import com.facebook.CallbackManager

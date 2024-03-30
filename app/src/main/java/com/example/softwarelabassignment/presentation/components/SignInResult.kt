@@ -1,4 +1,4 @@
-package com.example.softwarelabassignment.presentation.components.socialauth
+package com.example.softwarelabassignment.presentation.components
 
 data class SignInResult(
     val data: UserData?,

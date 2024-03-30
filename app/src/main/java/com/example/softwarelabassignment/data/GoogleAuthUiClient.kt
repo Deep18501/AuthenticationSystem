@@ -5,8 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import com.example.softwarelabassignment.R
-import com.example.softwarelabassignment.presentation.components.socialauth.SignInResult
-import com.example.softwarelabassignment.presentation.components.socialauth.UserData
+import com.example.softwarelabassignment.presentation.components.SignInResult
+import com.example.softwarelabassignment.presentation.components.UserData
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.GoogleAuthProvider
