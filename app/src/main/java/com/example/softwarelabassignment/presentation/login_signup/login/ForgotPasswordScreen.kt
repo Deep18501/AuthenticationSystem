@@ -51,6 +51,7 @@ import com.example.softwarelabassignment.presentation.components.CommonTextField
 import com.example.softwarelabassignment.presentation.components.CustomText
 import com.example.softwarelabassignment.presentation.components.FarmerEats
 import com.example.softwarelabassignment.presentation.components.FinalButton
+import com.example.softwarelabassignment.presentation.components.HandleUiEvents
 import com.example.softwarelabassignment.presentation.components.TitleText
 import com.example.softwarelabassignment.presentation.login_signup.AuthViewModel
 import com.example.softwarelabassignment.ui.theme.BgGrey
@@ -67,28 +68,8 @@ fun ForgotPasswordScreen(navController: NavController, viewModel: AuthViewModel 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = viewModel.eventFlow) {
-        Log.d("AuthViewModel", "Login Started ${viewModel.eventFlow}")
+    HandleUiEvents(viewModel,snackbarHostState,coroutineScope,navController)
 
-        viewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is UiEvents.SnackbarEvent -> {
-                    coroutineScope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = event.message,
-                            duration = SnackbarDuration.Short
-                        )
-                    }
-                }
-
-                is UiEvents.NavigateEvent -> {
-                    navController.navigate(
-                        event.route
-                    )
-                }
-            }
-        }
-    }
 
     Scaffold(
         snackbarHost = {

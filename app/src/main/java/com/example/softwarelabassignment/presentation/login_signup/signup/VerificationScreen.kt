@@ -3,7 +3,6 @@ package com.example.softwarelabassignment.presentation.login_signup.signup
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -22,25 +21,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,6 +56,7 @@ import com.example.softwarelabassignment.presentation.components.CommonTextField
 import com.example.softwarelabassignment.presentation.components.CustomText
 import com.example.softwarelabassignment.presentation.components.FarmerEats
 import com.example.softwarelabassignment.presentation.components.FinalButton
+import com.example.softwarelabassignment.presentation.components.HandleUiEvents
 import com.example.softwarelabassignment.presentation.components.TitleText
 import com.example.softwarelabassignment.presentation.login_signup.AuthViewModel
 import com.example.softwarelabassignment.ui.theme.BgGrey
@@ -93,28 +87,8 @@ fun SignUpVerificationScreen(
             documentName = temp
         }
     }
-    LaunchedEffect(key1 = viewModel.eventFlow) {
-        Log.d("AuthViewModel", "Login Started ${viewModel.eventFlow}")
+    HandleUiEvents(viewModel,snackbarHostState,coroutineScope,navController)
 
-        viewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is UiEvents.SnackbarEvent -> {
-                    coroutineScope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = event.message,
-                            duration = SnackbarDuration.Short
-                        )
-                    }
-                }
-
-                is UiEvents.NavigateEvent -> {
-                    navController.navigate(
-                        event.route
-                    )
-                }
-            }
-        }
-    }
     val prevDetails = viewModel.provideRegisterDetails()
 
     if (prevDetails != null) {

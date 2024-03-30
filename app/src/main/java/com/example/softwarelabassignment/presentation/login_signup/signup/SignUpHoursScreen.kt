@@ -3,6 +3,7 @@ package com.example.softwarelabassignment.presentation.login_signup.signup
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,21 +19,17 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,18 +43,18 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.softwarelabassignment.R
-import com.example.softwarelabassignment.common.UiEvents
+import com.example.softwarelabassignment.data.model.BusinessHours
 import com.example.softwarelabassignment.presentation.Screens
 import com.example.softwarelabassignment.presentation.components.CustomText
 import com.example.softwarelabassignment.presentation.components.FarmerEats
 import com.example.softwarelabassignment.presentation.components.FinalButton
+import com.example.softwarelabassignment.presentation.components.HandleUiEvents
 import com.example.softwarelabassignment.presentation.components.TitleText
 import com.example.softwarelabassignment.presentation.login_signup.AuthViewModel
 import com.example.softwarelabassignment.ui.theme.BgGrey
 import com.example.softwarelabassignment.ui.theme.BgOrange
 import com.example.softwarelabassignment.ui.theme.BgYellow
 import com.example.softwarelabassignment.ui.theme.TextGrey
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
@@ -90,41 +87,23 @@ fun SignUpHoursScreen(
     var selectedHours = listOf(false, false, false, false, false)
 
     val values = remember {
-        mutableStateOf( mutableListOf(
-            selectedHours,
-            selectedHours,
-            selectedHours,
-            selectedHours,
-            selectedHours,
-            selectedHours,
-            selectedHours))
+        mutableStateOf(
+            mutableListOf(
+                selectedHours,
+                selectedHours,
+                selectedHours,
+                selectedHours,
+                selectedHours,
+                selectedHours,
+                selectedHours
+            )
+        )
     }
 
 
 
+    HandleUiEvents(viewModel,snackbarHostState,coroutineScope,navController)
 
-    LaunchedEffect(key1 = viewModel.eventFlow) {
-        Log.d("AuthViewModel", "Login Started ${viewModel.eventFlow}")
-
-        viewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is UiEvents.SnackbarEvent -> {
-                    coroutineScope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = event.message,
-                            duration = SnackbarDuration.Short
-                        )
-                    }
-                }
-
-                is UiEvents.NavigateEvent -> {
-                    navController.navigate(
-                        event.route
-                    )
-                }
-            }
-        }
-    }
 
     LaunchedEffect(selectedDay) {
         println(selectedDay)
@@ -162,14 +141,26 @@ fun SignUpHoursScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 for (day in 0..6) {
+                    var filled = false
+                    for (fill in 0..4) {
+                        Log.d(
+                            "TextField",
+                            "Current $fill ${values.value[selectedDay.intValue][fill]}"
+                        )
+                        if (values.value[day][fill]) {
+                            filled = true
+                            break
+                        }
+                    }
+                    Log.d("TextField", "Current \n $filled")
 
                     WeekItem(
                         item = days[day],
                         selected = if (day == selectedDay.intValue) true else false,
-                        filled = true
+                        filled = filled
                     ) {
-                        if (!(selectedDay.intValue == day)) {
-                            selectedDay.intValue=day
+                        if (selectedDay.intValue != day) {
+                            selectedDay.intValue = day
                         }
                     }
                 }
@@ -177,9 +168,9 @@ fun SignUpHoursScreen(
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            HourseMaker(values.value, selectedDay.intValue, timing){
-                values.value[selectedDay.intValue]=it
-                Log.d("TextField", values.value.toString())
+            HourseMaker(values.value, selectedDay.intValue, timing) {
+                values.value[selectedDay.intValue] = it
+//                Log.d("TextField", values.value.toString())
             }
             Spacer(modifier = Modifier.weight(1f))
 
@@ -200,6 +191,17 @@ fun SignUpHoursScreen(
                     )
                     FinalButton(text = "Submit", loding = loadingState.value) {
 
+                        val businessHours=BusinessHours()
+                        businessHours.mon= hourList(values.value[0])
+                        businessHours.tue= hourList(values.value[1])
+                        businessHours.wed= hourList(values.value[2])
+                        businessHours.thu= hourList(values.value[3])
+                        businessHours.fri= hourList(values.value[4])
+                        businessHours.sat= hourList(values.value[5])
+                        businessHours.sun= hourList(values.value[6])
+
+                        viewModel.update4(businessHours)
+
                         coroutineScope.launch {
                             viewModel.signUpUser()
                         }
@@ -215,59 +217,85 @@ fun SignUpHoursScreen(
 
 }
 
+fun hourList(list: List<Boolean>):List<String>?{
+    val timing = listOf(
+        "8:00am - 10:00am",
+        "10:00am - 1:00pm",
+        "1:00pm - 4:00am",
+        "4:00pm - 7:00pm",
+        "7:00pm - 10:00pm",
+    )
+
+    val hrLs= mutableListOf<String>()
+    if (list[0]){ hrLs.add(timing[0])}
+    if (list[1]){ hrLs.add(timing[1])}
+    if (list[2]){hrLs.add(timing[2]) }
+    if (list[3]){hrLs.add(timing[3]) }
+    if (list[4]){hrLs.add(timing[4]) }
+    if (hrLs.isEmpty()){
+        return null
+    }
+    return hrLs.toList()
+}
 
 @Composable
 fun HourseMaker(
     values: MutableList<List<Boolean>>,
     selectedDayT: Int,
     timing: List<String>,
-    onChangesMade:(List<Boolean>)->Unit
+    onChangesMade: (List<Boolean>) -> Unit
 ) {
-    val selectedDay= remember {
+    val selectedDay = remember {
         mutableIntStateOf(selectedDayT)
     }
-    val boxSel= remember {
-        mutableStateListOf<Boolean>(values[selectedDay.intValue][0],values[selectedDay.intValue][1],values[selectedDay.intValue][2],values[selectedDay.intValue][3],values[selectedDay.intValue][4])
+    val boxSel = remember {
+        mutableStateListOf<Boolean>(
+            values[selectedDay.intValue][0],
+            values[selectedDay.intValue][1],
+            values[selectedDay.intValue][2],
+            values[selectedDay.intValue][3],
+            values[selectedDay.intValue][4]
+        )
     }
-    LaunchedEffect (selectedDayT){
-selectedDay.intValue=selectedDayT
-        boxSel[0]=values[selectedDayT][0]
-        boxSel[1]=values[selectedDayT][1]
-        boxSel[2]=values[selectedDayT][2]
-        boxSel[3]=values[selectedDayT][3]
-        boxSel[4]=values[selectedDayT][4]
+    LaunchedEffect(selectedDayT) {
+        selectedDay.intValue = selectedDayT
+        boxSel[0] = values[selectedDayT][0]
+        boxSel[1] = values[selectedDayT][1]
+        boxSel[2] = values[selectedDayT][2]
+        boxSel[3] = values[selectedDayT][3]
+        boxSel[4] = values[selectedDayT][4]
     }
 
-    Log.d("TextField","Current ${selectedDay.intValue},${selectedDayT} , $values")
+    Log.d("TextField", "Current ${selectedDay.intValue},${selectedDayT} , $values")
 
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         TimingItem(item = timing[0], selected = boxSel[0], width = .5f) {
             boxSel[0] = !(boxSel[0])
-            values[selectedDay.intValue]=boxSel.toList()
+            values[selectedDay.intValue] = boxSel.toList()
             onChangesMade(boxSel.toList())
         }
         TimingItem(item = timing[1], selected = values[selectedDay.intValue][1]) {
             boxSel[1] = !(boxSel[1])
-            values[selectedDay.intValue]=boxSel.toList()
+            values[selectedDay.intValue] = boxSel.toList()
             onChangesMade(boxSel.toList())
         }
     }
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         TimingItem(item = timing[2], selected = values[selectedDay.intValue][2], width = .5f) {
             boxSel[2] = !(boxSel[2])
-            values[selectedDay.intValue]=boxSel.toList()
+            values[selectedDay.intValue] = boxSel.toList()
             onChangesMade(boxSel.toList())
         }
         TimingItem(item = timing[3], selected = values[selectedDay.intValue][3]) {
             boxSel[3] = !(boxSel[3])
-            values[selectedDay.intValue]=boxSel.toList()
+            values[selectedDay.intValue] = boxSel.toList()
             onChangesMade(boxSel.toList())
         }
     }
     Row(modifier = Modifier.fillMaxWidth()) {
         TimingItem(item = timing[4], selected = values[selectedDay.intValue][4], width = .5f) {
             boxSel[4] = !(boxSel[4])
-            values[selectedDay.intValue]=boxSel.toList()
+            values[selectedDay.intValue] = boxSel.toList()
             onChangesMade(boxSel.toList())
         }
     }
@@ -283,6 +311,13 @@ fun WeekItem(item: String, selected: Boolean, filled: Boolean, onClick: () -> Un
         .clickable {
             onClick()
         }
+        .border(
+            width = 1.dp,
+            shape = RoundedCornerShape(8.dp),
+            color = if (selected) {
+                BgOrange
+            } else BgGrey
+        )
         .background(
             if (selected) {
                 BgOrange
@@ -307,7 +342,7 @@ fun WeekItem(item: String, selected: Boolean, filled: Boolean, onClick: () -> Un
 }
 
 @Composable
-fun TimingItem(item: String, selected: Boolean, width:Float=1f,onClick: () -> Unit) {
+fun TimingItem(item: String, selected: Boolean, width: Float = 1f, onClick: () -> Unit) {
     Box(modifier = Modifier
         .fillMaxWidth(width)
         .padding(5.dp)

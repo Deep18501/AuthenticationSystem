@@ -1,5 +1,6 @@
 package com.example.softwarelabassignment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,6 +23,7 @@ import com.example.softwarelabassignment.presentation.login_signup.signup.SignUp
 import com.example.softwarelabassignment.presentation.login_signup.signup.SignUpVerificationScreen
 import com.example.softwarelabassignment.presentation.onboarding_screen.OnboardingScreen
 import com.example.softwarelabassignment.ui.theme.SoftwareLabAssignmentTheme
+import com.facebook.CallbackManager
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -88,6 +90,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
     }
+
 }
 

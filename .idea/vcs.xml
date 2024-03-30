@@ -1,25 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
-    <mapping directory="$PROJECT_DIR$/Alibi" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Android_Chat_Application" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Authentication" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/CryptocurrencyAppYT" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/FirebaseMVVMApp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/FoodZilla3" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/JsonParser" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/LandmarkRecognitionTensorflow" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/NumberPlateDetectionAoo" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/PlacementTracker" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Push-Notification-in-kotlin" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/TodoappPhylip/HappySadImageClassifier" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/TodoappPhylip/MVVMTodoApp" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/TodoappPhylip/https---github.com-tmor8832-RPi_licence_detection-tree-main" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Tutorials" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/android-compose-template" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/android-firebase-cloud-messaging" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/platerecognizer-android-example" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/quickstart-android" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/uCalculator" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
   </component>
 </project>

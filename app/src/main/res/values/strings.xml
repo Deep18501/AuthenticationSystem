@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">SoftwareLabAssignment</string>
+    <string name="web_client_id">79300271213-4aar58fsjqbfcpn60tv4oqsbn9ggcigh.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">941561917291703</string>
+    <string name="facebook_client_token">7b48254235c28b713239bf1dae83784d</string>
 </resources>

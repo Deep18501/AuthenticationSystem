@@ -2,22 +2,19 @@ package com.example.softwarelabassignment.presentation.login_signup
 
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.softwarelabassignment.Result
 import com.example.softwarelabassignment.common.TextFieldState
 import com.example.softwarelabassignment.common.UiEvents
-import com.example.softwarelabassignment.data.model.Results
+import com.example.softwarelabassignment.data.model.BusinessHours
 import com.example.softwarelabassignment.data.model.UserLoginDetails
 import com.example.softwarelabassignment.data.model.UserRegisterDetails
 import com.example.softwarelabassignment.domain.repository.LoginSignUpRepository
 import com.example.softwarelabassignment.presentation.Screens
+import com.example.softwarelabassignment.presentation.components.socialauth.SignInResult
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,6 +30,7 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val repository: LoginSignUpRepository
 ) : ViewModel() {
+
 
     private var _loginState = MutableStateFlow(false)
     val loginState = _loginState.asStateFlow()
@@ -65,6 +63,7 @@ class AuthViewModel @Inject constructor(
     val phoneState: State<TextFieldState> = _phoneState
 
     private var registerDetails: UserRegisterDetails? = null
+
 
     fun setEmailState(newText: String) {
         _emailState.value = _emailState.value.copy(text = newText)
@@ -102,6 +101,112 @@ class AuthViewModel @Inject constructor(
         _loadingState.value = isLoading
     }
 
+
+
+    fun onSocialSignInResult(result: SignInResult, type:String) {
+
+        viewModelScope.launch {
+            setLoadingState(true)
+            Log.d("AuthViewModel", "Login Started with data $result")
+
+            _loginState.value = loginState.value
+
+            result.data?.let {
+                UserLoginDetails(
+                    email = it.userEmail,
+                    type = type,
+                    social_id = result.data.userId
+                    )
+            }?.let {
+                repository.loginPost(
+                    it
+                ).collectLatest { result ->
+                    result.message?.let { Log.d("Login Result", it) }
+                    when (result) {
+                        is Result.Error -> {
+                            snackBarEvent(result.message ?: "Error!")
+                        }
+
+                        is Result.Success -> {
+                            if (result.data?.success.toBoolean()) {
+                                _eventFlow.emit(UiEvents.SnackbarEvent("Logined Succesfully"))
+                                _loginState.update {
+                                    result.data?.success.toBoolean()
+                                }
+                            } else {
+                                Log.d("AuthViewModel", "Login error ${result.data?.message}")
+                                snackBarEvent(result.data?.message ?: "Error!")
+                            }
+
+                        }
+                    }
+                    setLoadingState(false)
+
+                    Log.d("AuthViewModel", "Login ended $_loadingState")
+
+                }
+            }
+
+        }
+
+    }
+
+    fun onSocialRegisterInResult(result: SignInResult, type:String) {
+        viewModelScope.launch {
+            setLoadingState(true)
+            Log.d("AuthViewModel", "Login Started $result")
+
+            _loginState.value = loginState.value
+
+            result.data?.let {
+                result.data.username?.let { it1 ->
+                    UserRegisterDetails(
+                        email = it.userEmail,
+                        type = type,
+                        full_name = it1,
+                        social_id = result.data.userId
+                    )
+                }
+            }?.let {
+                repository.registrationPost(
+                    it
+                ).collectLatest { result ->
+                    result.message?.let { Log.d("Register Result", it) }
+                    Log.d("AuthViewModel", "Register Started ${result.data}")
+
+                    when (result) {
+
+                        is Result.Error -> {
+                            snackBarEvent(result.message ?: "Error!")
+                        }
+
+                        is Result.Success -> {
+                            if (result.data?.success.toBoolean()) {
+                                Log.d("AuthViewModel", "Register success ${result.data?.token}")
+
+                                _eventFlow.emit(UiEvents.SnackbarEvent("Registered Succesfully"))
+
+                                _loginState.update {
+                                    result.data?.success.toBoolean()
+                                }
+                            } else {
+                                Log.d("AuthViewModel", "Login error ${result.data?.token}")
+                                snackBarEvent(result.data?.message ?: "Error!")
+                            }
+
+                        }
+                    }
+                    setLoadingState(false)
+                }
+            }
+
+        }
+
+    }
+
+    fun resetState() {
+        _loginState.update { false }
+    }
     suspend fun snackBarEvent(message: String) {
         _eventFlow.emit(
             UiEvents.SnackbarEvent(message)
@@ -207,7 +312,11 @@ class AuthViewModel @Inject constructor(
             registration_proof = document
         )
     }
-
+    fun update4(businessHours: BusinessHours){
+        registerDetails=registerDetails?.copy(
+            business_hours = businessHours
+        )
+    }
     fun signUpUser() {
         viewModelScope.launch {
             setLoadingState(true)
@@ -251,6 +360,7 @@ class AuthViewModel @Inject constructor(
 
         }
     }
+
 
     fun forgotPassword() {
         viewModelScope.launch {
@@ -325,4 +435,6 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
+
+
 }

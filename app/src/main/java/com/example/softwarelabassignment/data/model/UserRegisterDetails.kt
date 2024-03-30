@@ -9,7 +9,7 @@ data class UserRegisterDetails(
     val email: String,
     val full_name: String,
     val informal_name: String="",
-    val password: String,
+    val password: String?=null,
     val phone: String="",
     val registration_proof: String="",
     val role: String="farmer",
