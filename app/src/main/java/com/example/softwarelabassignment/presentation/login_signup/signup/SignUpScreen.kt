@@ -102,11 +102,6 @@ fun SignUpScreen(
         )
     }
 
-    LaunchedEffect(key1 = Unit) {
-        if(googleAuthUiClient.getSignedInUser() != null) {
-            viewModel.navigationEvent(Screens.HomeScreen.route)
-        }
-    }
 
     val launcherGoogle = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
