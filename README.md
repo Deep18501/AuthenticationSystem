@@ -1,1 +1,1 @@
-Install app-debug.apk to check out the android app
+download install.apk to check out the android app
